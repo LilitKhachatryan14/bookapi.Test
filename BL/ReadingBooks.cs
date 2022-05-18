@@ -10,31 +10,55 @@ namespace bookapi.Test.BL
 {
     public class ReadingBooks
     {
-        public ReadingBooks(IBookReadingRepository @object)
+        private readonly IBookReadingRepository _bookReadingRepository;
+
+        public ReadingBooks(IBookReadingRepository bookReadingRepository)
         {
-            Object = @object;
+            _bookReadingRepository = bookReadingRepository;
         }
 
         public string DateRead { get; set; }
         public int Rating { get; set; } // btw 1 and 5
-        public IBookReadingRepository Object { get; }
 
         public List<Book> GetBooks() { throw new NotImplementedException(); }
-        public void AddBook(Book book, string dateRead, int rating) { }
+        public void AddBook(Book book, string dateRead, int rating)
+        {
+            if (book == null)
+                throw new ArgumentNullException(nameof(book));
+
+            _bookReadingRepository.Save(new BookRead
+            {
+                Title = "The Hobbit",
+                Author = "J.R.R. Tolkein",
+                Length = 320,
+                Year = 1937
+            });
+        }
         public void DeleteBook() { }
         public List<Book> GetBooksByRating(int rating) { throw new NotImplementedException(); }
-        public int NumberRead() { throw new NotImplementedException(); }
+        public int NumberRead()
+        { 
+            return _bookReadingRepository.GetBooksNumber(); 
+        }
 
         internal void AddBulk(List<Book> bookList)
         {
-            throw new NotImplementedException();
+            _bookReadingRepository.SaveBulk(new List<BookRead>{
+                new BookRead
+            {
+                Title = "The Hobbit",
+                Author = "J.R.R. Tolkein",
+                Length = 320,
+                Year = 1937
+            },
+             new BookRead
+             {
+                Title = "The Catcher in the Rye",
+                Author = "J. D. Salinger",
+                Length = 115,
+                Year = 1951
+
+             } });
         }
-
-        //List<Book> Books = new List<Book>
-        //    {
-        //new Book {Title = "The Hobbit", Author = "J.R.R. Tolkein", Length = 320, Year = 1937 },
-        //new Book {Title = "Alices Adventures in Wonderland", Author = "Lewis Carroll", Length = 544, Year = 1865 },
-        //};
-
     }
 }
