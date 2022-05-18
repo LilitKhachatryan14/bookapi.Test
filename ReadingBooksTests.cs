@@ -31,7 +31,7 @@ namespace bookapi.Test
         }
 
 
-        //[Fact]
+        [Fact]
         public void ShouldThrowExceptionIfRequestIsNull()
         {
             // Act
@@ -41,7 +41,7 @@ namespace bookapi.Test
             Assert.Equal("book", exception.ParamName);
         }
 
-        //[Fact]
+        [Fact]
         public void ShouldAddBookIfRead()
         {
             BookRead savedBook = null;
@@ -71,7 +71,7 @@ namespace bookapi.Test
         //    Assert.Equal(0, _readingBooks.NumberRead());
         //}
          
-       // [Fact]
+        [Fact]
         public void AddingFirstBookReturnsNumberOfBooks1()
         {
             _availableBooks.Clear();
