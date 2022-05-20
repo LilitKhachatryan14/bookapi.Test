@@ -20,21 +20,21 @@ namespace bookapi.Test.BL
         public string DateRead { get; set; }
         public int Rating { get; set; } // btw 1 and 5
 
-        public List<Book> GetBooks() { throw new NotImplementedException(); }
-        public void AddBook(Book book, string dateRead, int rating)
+        public List<Book> GetBooks() {
+            return _bookReadingRepository.GetReadBooks().ToList();
+        }
+        public void AddBook(BookRequest book, string dateRead, int rating)
         {
             if (book == null)
                 throw new ArgumentNullException(nameof(book));
 
-            _bookReadingRepository.Save(new BookRead
-            {
-                Title = "The Hobbit",
-                Author = "J.R.R. Tolkein",
-                Length = 320,
-                Year = 1937
-            });
+            _bookReadingRepository.Save(CreateBook<Book>(book));
         }
-        public void DeleteBook() { }
+
+        public void DeleteBook(string title) 
+        {
+            _bookReadingRepository.Remove(title);
+        }
         public List<Book> GetBooksByRating(int rating) { throw new NotImplementedException(); }
         public int NumberRead()
         { 
@@ -43,15 +43,15 @@ namespace bookapi.Test.BL
 
         internal void AddBulk(List<Book> bookList)
         {
-            _bookReadingRepository.SaveBulk(new List<BookRead>{
-                new BookRead
+            _bookReadingRepository.SaveBulk(new List<BookRequest>{
+                new BookRequest
             {
                 Title = "The Hobbit",
-                Author = "J.R.R. Tolkein",
+                Author = "J.R.R. Tolkien",
                 Length = 320,
                 Year = 1937
             },
-             new BookRead
+             new BookRequest
              {
                 Title = "The Catcher in the Rye",
                 Author = "J. D. Salinger",
@@ -60,5 +60,18 @@ namespace bookapi.Test.BL
 
              } });
         }
+
+
+        private T CreateBook<T>(BookRequest book) where T : BookBase, new()
+        {
+            return new T
+            {
+                Title = book.Title,
+                Author = book.Author,
+                Length = book.Length,
+                Year = book.Year
+            };
+        }
+
     }
 }

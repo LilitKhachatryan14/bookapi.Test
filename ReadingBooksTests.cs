@@ -13,11 +13,11 @@ namespace bookapi.Test
         private readonly Mock<IBookReadingRepository> _readingBooksRepositoryMock;
         private readonly ReadingBooks _readingBooks;
 
-        private readonly Book _book;
+        private readonly BookRequest _book;
         private readonly List<Book> _bookList;
         public ReadingBooksTests()
         {
-            _availableBooks = new List<Book> { new Book() };
+            _availableBooks = new List<Book> { };
             _readingBooksRepositoryMock = new Mock<IBookReadingRepository>();
             _readingBooksRepositoryMock.Setup(x => x.GetBooksNumber())
                 .Returns(_availableBooks.Count);
@@ -25,9 +25,9 @@ namespace bookapi.Test
 
             _readingBooks = new ReadingBooks(_readingBooksRepositoryMock.Object);
 
-            _book = new Book { Title = "The Hobbit", Author = "J.R.R. Tolkein", Length = 320, Year = 1937 };
-            var book2 = new Book { Title = "Alices Adventures in Wonderland", Author = "Lewis Carroll", Length = 544, Year = 1865 };
-            _bookList = new List<Book> { _book, book2 };
+            _book = new BookRequest { Title = "The Hobbit", Author = "J.R.R. Tolkein", Length = 320, Year = 1937 };
+            var book2 = new BookRequest { Title = "Alices Adventures in Wonderland", Author = "Lewis Carroll", Length = 544, Year = 1865 };
+            // _bookList = new List<BookRequest> { _book, book2 };
         }
 
 
@@ -44,16 +44,16 @@ namespace bookapi.Test
         [Fact]
         public void ShouldAddBookIfRead()
         {
-            BookRead savedBook = null;
-            _readingBooksRepositoryMock.Setup(x => x.Save(It.IsAny<BookRead>()))
-                .Callback<BookRead>(bookReading =>
+            Book savedBook = null;
+            _readingBooksRepositoryMock.Setup(x => x.Save(It.IsAny<Book>()))
+                .Callback<Book>(bookReading =>
                 {
                     savedBook = bookReading;
                 });
 
             _readingBooks.AddBook(_book, "", 3);
 
-            _readingBooksRepositoryMock.Verify(x => x.Save(It.IsAny<BookRead>()), Times.Once);
+            _readingBooksRepositoryMock.Verify(x => x.Save(It.IsAny<Book>()), Times.Once);
 
             Assert.NotNull(savedBook);
             Assert.Equal(_book.Author, savedBook.Author);
@@ -62,21 +62,26 @@ namespace bookapi.Test
             Assert.Equal(_book.Year, savedBook.Year);
         }
 
-        //[Fact]
-        //public void FirstVisitNumberOfBooks0()
-        //{
-        //    _availableBooks.Clear();
-        //    _readingBooksRepositoryMock.Verify(x => x.Save(It.IsAny<BookRead>()), Times.Never);
+        [Fact]
+        public void FirstVisitNumberOfBooks0()
+        {
+            _readingBooksRepositoryMock.VerifyNoOtherCalls();
+            Assert.Equal(0, _readingBooks.NumberRead());
+        }
 
-        //    Assert.Equal(0, _readingBooks.NumberRead());
-        //}
-         
         [Fact]
         public void AddingFirstBookReturnsNumberOfBooks1()
         {
-            _availableBooks.Clear();
+            //Book savedBook = null;
+
+            //_readingBooksRepositoryMock.Setup(x => x.Save(It.IsAny<Book>()))
+            //    .Callback<Book>(bookReading =>
+            //    {
+            //        savedBook = bookReading;
+            //    });
+
             _readingBooks.AddBook(_book, "", 3);
-            _readingBooksRepositoryMock.Verify(x => x.Save(It.IsAny<BookRead>()), Times.Once);
+            _readingBooksRepositoryMock.Verify(x => x.Save(It.IsAny<Book>()), Times.Once);
 
             Assert.Equal(1, _readingBooks.NumberRead());
         }
