@@ -41,26 +41,16 @@ namespace bookapi.Test.BL
             return _bookReadingRepository.GetBooksNumber(); 
         }
 
-        internal void AddBulk(List<Book> bookList)
+        internal void AddBulk(List<BookRequest> bookList)
         {
-            _bookReadingRepository.SaveBulk(new List<BookRequest>{
-                new BookRequest
+            List<Book> newBookList = new List<Book>();
+            foreach (BookRequest book in bookList)
             {
-                Title = "The Hobbit",
-                Author = "J.R.R. Tolkien",
-                Length = 320,
-                Year = 1937
-            },
-             new BookRequest
-             {
-                Title = "The Catcher in the Rye",
-                Author = "J. D. Salinger",
-                Length = 115,
-                Year = 1951
+                newBookList.Add(CreateBook<Book>(book));
+            }
 
-             } });
+            _bookReadingRepository.SaveBulk(newBookList);
         }
-
 
         private T CreateBook<T>(BookRequest book) where T : BookBase, new()
         {
